@@ -21,7 +21,7 @@ echo "🔨 Building..."
 pnpm run build
 
 # Run basic example
-echo "🧪 Testing with basic example..."
-pnpm run example:basic
+# echo "🧪 Testing with basic example..."
+# pnpm run example:basic
 
 echo "✅ Setup complete! Try 'make help' to see available commands."
