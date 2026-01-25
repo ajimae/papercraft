@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ChromePool } from '../src/chrome-pool';
+import type { Ilogger } from '../src';
 
 describe('ChromePool', () => {
   let pool: ChromePool;
@@ -49,5 +50,43 @@ describe('ChromePool', () => {
 
     const finalStats = pool.getStats();
     expect(finalStats.totalActivePages).toBe(0);
+  }, 60000);
+
+  it('should use passed in logger object', async () => {
+    const logger: Ilogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
+
+    pool = new ChromePool({ maxBrowsers: 2, logger });
+    await pool.initialize();
+
+    expect(logger.info).toHaveBeenCalled();
+    expect(logger.info).toHaveBeenCalledWith(`✅ Chrome pool ready`);
+
+    const pages = await Promise.all([pool.acquirePage(), pool.acquirePage(), pool.acquirePage()]);
+
+    const stats = pool.getStats();
+    expect(stats.totalActivePages).toBe(3);
+
+    await Promise.all(pages.map((page) => pool.releasePage(page)));
+
+    const finalStats = pool.getStats();
+    expect(finalStats.totalActivePages).toBe(0);
+  }, 60000);
+
+  it('should call the `onInitialize` function on successful initialize', async () => {
+    const logger = { info: vi.fn() };
+    const onInitialize = vi.fn(() => {
+      logger.info(`Chrome Pool Ready!!`);
+    });
+
+    pool = new ChromePool({ maxBrowsers: 2, onInitialize });
+    await pool.initialize();
+
+    expect(onInitialize).toHaveBeenCalled();
+    expect(logger.info).toHaveBeenCalled();
+    expect(logger.info).toHaveBeenCalledWith('Chrome Pool Ready!!');
   }, 60000);
 });

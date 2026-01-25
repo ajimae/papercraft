@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import type { Browser, BrowserContext, Page } from 'playwright';
-import type { PoolOptions } from './types';
+import type { Ilogger, PoolOptions } from './types';
+import { logger } from './utils';
 
 interface BrowserInstance {
   browser: Browser;
@@ -15,6 +16,8 @@ export class ChromePool {
   private maxPagesPerBrowser: number;
   private browserArgs: string[];
   private isInitialized = false;
+  private onInitialize: (...args: unknown[]) => Promise<void> | void;
+  private logger: Ilogger;
 
   constructor(options: PoolOptions = {}) {
     this.maxBrowsers = options.maxBrowsers || 3;
@@ -44,21 +47,29 @@ export class ChromePool {
       '--disable-webgl', // Critical for Windows GPU issues
       '--disable-webgl2',
     ];
+
+    // merge logger
+    this.logger = Object.assign(logger, options.logger);
+    this.onInitialize =
+      options.onInitialize ??
+      (() => {
+        this.logger.info('✅ Chrome pool ready');
+      });
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
-    console.log(`🚀 Initializing Chrome pool with ${this.maxBrowsers} browsers...`);
+    this.logger.info(`🚀 Initializing Chrome pool with ${this.maxBrowsers} browsers...`);
 
     // Launch browsers sequentially to avoid resource conflicts
     for (let i = 0; i < this.maxBrowsers; i++) {
-      console.log(`   Launching browser ${i + 1}/${this.maxBrowsers}...`);
+      this.logger.info(`   Launching browser ${i + 1}/${this.maxBrowsers}...`);
       await this.createBrowserInstance();
     }
 
     this.isInitialized = true;
-    console.log('✅ Chrome pool ready');
+    await this.onInitialize('✅ Chrome pool ready', this.instances);
   }
 
   private async createBrowserInstance(): Promise<BrowserInstance> {
@@ -121,7 +132,7 @@ export class ChromePool {
   }
 
   async close(): Promise<void> {
-    console.log('🔄 Closing Chrome pool...');
+    this.logger.info('🔄 Closing Chrome pool...');
 
     await Promise.all(
       this.instances.map(async (inst) => {
@@ -132,7 +143,7 @@ export class ChromePool {
 
     this.instances = [];
     this.isInitialized = false;
-    console.log('✅ Chrome pool closed');
+    this.logger.info('✅ Chrome pool closed');
   }
 
   getStats() {

@@ -1,14 +1,17 @@
 import { chromium } from 'playwright';
 import type { Page } from 'playwright';
 import { ChromePool } from './chrome-pool';
-import type { PDFOptions, GeneratorOptions } from './types';
+import type { PDFOptions, GeneratorOptions, Ilogger } from './types';
+import { logger } from './utils';
 
 export class PDFGenerator {
   private pool: ChromePool | null = null;
   private enablePool: boolean;
+  private logger: Ilogger;
 
   constructor(options: GeneratorOptions = {}) {
     this.enablePool = options.enablePool ?? true;
+    this.logger = Object.assign(logger, options.logger);
 
     if (this.enablePool) {
       this.pool = new ChromePool({
@@ -75,7 +78,7 @@ export class PDFGenerator {
       });
 
       const duration = Date.now() - startTime;
-      console.log(`✅ PDF generated in ${duration}ms`);
+      this.logger.info(`✅ PDF generated in ${duration}ms`);
 
       return pdf;
     } finally {

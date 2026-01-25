@@ -1,4 +1,4 @@
-import { generatePDF, PDFGenerator } from './dist/index.js';
+import { generatePDF, PDFGenerator } from '../src';
 import { writeFileSync } from 'fs';
 
 async function testSimple() {
@@ -59,4 +59,4 @@ async function main() {
   }
 }
 
-main();
+main().catch(console.error);

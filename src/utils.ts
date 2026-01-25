@@ -47,3 +47,15 @@ export function formatBytes(bytes: number): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
+
+export const logger = {
+  info: (...args: unknown[]) => {
+    console.info(`[INFO] ${args.join(' ')}`);
+  },
+  warn: (...args: unknown[]) => {
+    console.warn(`[WARN] ${args.join(' ')}`);
+  },
+  error: (...args: unknown[]) => {
+    console.error(`[ERROR] ${args.join(' ')}`);
+  },
+};

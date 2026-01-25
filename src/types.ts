@@ -3,15 +3,15 @@ export interface PDFOptions {
   css?: string;
 
   // Page settings
-  format?: "A4" | "A3" | "Letter" | "Legal";
+  format?: 'A4' | 'A3' | 'Letter' | 'Legal';
   landscape?: boolean;
 
   // Margins
   margin?: {
-    top?: string;
-    bottom?: string;
-    left?: string;
-    right?: string;
+    top?: string | number;
+    bottom?: string | number;
+    left?: string | number;
+    right?: string | number;
   };
 
   // Headers and footers
@@ -26,15 +26,29 @@ export interface PDFOptions {
 
   // Advanced
   timeout?: number;
-  waitUntil?: "load" | "domcontentloaded" | "networkidle";
+  waitUntil?: 'load' | 'domcontentloaded' | 'networkidle';
+  height?: string | number;
+  width?: string | number;
+  outline?: boolean;
+  pageRanges?: string;
+  path?: string;
+  tagged?: boolean;
 }
 
 export interface PoolOptions {
   maxBrowsers?: number;
   maxPagesPerBrowser?: number;
   browserArgs?: string[];
+  onInitialize?: (...args: unknown[]) => Promise<void> | void;
+  logger?: Ilogger;
 }
 
 export interface GeneratorOptions extends PoolOptions {
   enablePool?: boolean;
+}
+
+export interface Ilogger {
+  info: (...args: unknown[]) => void;
+  warn: (...args: unknown[]) => void;
+  error: (...args: unknown[]) => void;
 }

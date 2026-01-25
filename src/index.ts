@@ -1,6 +1,6 @@
 export { PDFGenerator } from './generator';
 export { ChromePool } from './chrome-pool';
-export type { PDFOptions, GeneratorOptions, PoolOptions } from './types';
+export type { PDFOptions, GeneratorOptions, PoolOptions, Ilogger } from './types';
 export * from './utils';
 
 import { chromium } from 'playwright';
