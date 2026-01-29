@@ -60,22 +60,35 @@ export class PDFGenerator {
         timeout: options.timeout || 30000,
       });
 
+      const {
+        format,
+        landscape,
+        margin,
+        printBackground,
+        displayHeaderFooter,
+        headerTemplate,
+        footerTemplate,
+        preferCSSPageSize,
+        scale,
+        ...rest
+      } = options;
+
       const pdf = await page.pdf({
-        format: options.format || 'A4',
-        landscape: options.landscape || false,
-        margin: options.margin || {
+        format: format || 'A4',
+        landscape: landscape || false,
+        margin: margin || {
           top: '1cm',
           bottom: '1cm',
           left: '1cm',
           right: '1cm',
         },
-        printBackground: options.printBackground ?? true,
-        displayHeaderFooter: options.displayHeaderFooter || false,
-        headerTemplate: options.headerTemplate || '',
-        footerTemplate: options.footerTemplate || '',
-        preferCSSPageSize: options.preferCSSPageSize || false,
-        scale: options.scale || 1,
-        ...options
+        printBackground: printBackground ?? true,
+        displayHeaderFooter: displayHeaderFooter || false,
+        headerTemplate: headerTemplate || '',
+        footerTemplate: footerTemplate || '',
+        preferCSSPageSize: preferCSSPageSize || false,
+        scale: scale || 1,
+        ...rest,
       });
 
       const duration = Date.now() - startTime;
