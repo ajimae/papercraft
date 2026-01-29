@@ -49,7 +49,7 @@ export class ChromePool {
     ];
 
     // merge logger
-    this.logger = Object.assign(logger, options.logger);
+    this.logger = Object.assign(logger, options.logger) as Ilogger;
     this.onInitialize =
       options.onInitialize ??
       (() => {
