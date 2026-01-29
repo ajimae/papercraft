@@ -11,7 +11,7 @@ export class PDFGenerator {
 
   constructor(options: GeneratorOptions = {}) {
     this.enablePool = options.enablePool ?? true;
-    this.logger = Object.assign(logger, options.logger);
+    this.logger = Object.assign(logger, options.logger) as Ilogger;
 
     if (this.enablePool) {
       this.pool = new ChromePool({
@@ -75,6 +75,7 @@ export class PDFGenerator {
         footerTemplate: options.footerTemplate || '',
         preferCSSPageSize: options.preferCSSPageSize || false,
         scale: options.scale || 1,
+        ...options
       });
 
       const duration = Date.now() - startTime;
